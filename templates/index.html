@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Scraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Web Scraper</h1>
+    <form id="scraper-form">
+        <input type="text" id="base_url" name="base_url" placeholder="Enter your website URL (e.g., https://example.com)">
+        <button type="submit">Run Scraper</button>
+    </form>
+    <div id="status">
+        <span id="status-icon"></span>
+        <span id="status-message"></span>
+    </div>
+    <a href="/download-last-csv" id="download-link" style="display: none;">Download Latest CSV</a>
+    
+    <h2>Job Logs</h2>
+    <table>
+        <tr><th>Date/Time</th><th>Status</th><th>File</th></tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log[0] }}</td>
+            <td>{{ log[1] }}</td>
+            <td>{{ log[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        const statusIcon = document.getElementById('status-icon');
+        const statusMessage = document.getElementById('status-message');
+        const downloadLink = document.getElementById('download-link');
+
+        function updateStatus() {
+            fetch('/scraper-status')
+                .then(response => response.json())
+                .then(data => {
+                    statusMessage.innerText = data.message;
+                    if (data.running) {
+                        statusIcon.innerHTML = '<span class="spinner"></span>';
+                    } else if (data.success === true) {
+                        statusIcon.innerHTML = '<span class="checkmark">✔</span>';
+                        downloadLink.style.display = 'block';
+                    } else if (data.success === false) {
+                        statusIcon.innerHTML = '<span class="cross">✘</span>';
+                        downloadLink.style.display = 'none';
+                    } else {
+                        statusIcon.innerHTML = '';
+                    }
+                });
+        }
+
+        document.getElementById('scraper-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const baseUrl = document.getElementById('base_url').value;
+            fetch('/run-scraper', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'base_url=' + encodeURIComponent(baseUrl)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusMessage.innerText = data.message;
+                    const polling = setInterval(() => {
+                        updateStatus();
+                        fetch('/scraper-status')
+                            .then(res => res.json())
+                            .then(status => {
+                                if (!status.running) {
+                                    clearInterval(polling);
+                                    updateStatus();
+                                }
+                            });
+                    }, 1000); // Poll every 1 second
+                } else {
+                    statusMessage.innerText = data.message;
+                }
+            });
+        });
+
+        // Initial status check
+        updateStatus();
+    </script>
+</body>
+</html>
