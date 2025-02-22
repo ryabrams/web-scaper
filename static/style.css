@@ -1,0 +1,73 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+form {
+    margin: 20px 0;
+}
+input[type="text"] {
+    padding: 5px;
+    width: 70%;
+}
+button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #45a049;
+}
+#status {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 10px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.checkmark {
+    color: green;
+    font-size: 20px;
+    margin-right: 10px;
+}
+.cross {
+    color: red;
+    font-size: 20px;
+    margin-right: 10px;
+}
+#download-link {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #4CAF50;
+}
+#download-link:hover {
+    text-decoration: underline;
+}
