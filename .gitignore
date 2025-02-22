@@ -1,0 +1,4 @@
+__pycache__
+*.pyc
+scraper_jobs.db
+scrape_results_*.csv
